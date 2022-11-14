@@ -66,20 +66,37 @@ func (p *javaProvider) Capabilities() ([]string, error) {
 	}, nil
 }
 
+func (p *javaProvider) getValues(val interface{}) (string, string, error) {
+	m, ok := val.(map[interface{}]interface{})
+	if !ok {
+		return "", "", fmt.Errorf("not a map")
+	}
+	return m["location"].(string), m["reference"].(string), nil
+
+}
+
 func (p *javaProvider) Evaluate(cap string, conditionInfo []byte) (lib.ProviderEvaluateResponse, error) {
-	var cond javaCondition
+	cond := map[string]interface{}{}
 	err := yaml.Unmarshal(conditionInfo, &cond)
 	if err != nil {
 		return lib.ProviderEvaluateResponse{}, fmt.Errorf("unable to get query info")
 	}
 
-	query := cond.Referenced
-	if query == "" {
-		fmt.Printf("not ok did not get query info")
+	fmt.Printf("\n\n%#v\n\n", cond)
+	query, ok := cond["referenced"].(string)
+	if query == "" && ok {
 		return lib.ProviderEvaluateResponse{}, fmt.Errorf("unable to get query info")
+	} else {
+		_, query, err = p.getValues(cond["referenced"])
+		fmt.Printf("\n%v\n", err)
+		if err != nil {
+			return lib.ProviderEvaluateResponse{}, fmt.Errorf("unable to get query info")
+		}
 	}
 
 	symbols := p.GetAllSymbols(query)
+
+	fmt.Printf("\n%#v\n", symbols)
 
 	incidents := []lib.IncidentContext{}
 	for _, s := range symbols {

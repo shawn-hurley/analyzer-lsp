@@ -109,6 +109,9 @@ func (r *ruleEngine) RunRules(ctx context.Context, rules []Rule) []hubapi.Violat
 		for {
 			select {
 			case response := <-ret:
+				if response.Err != nil {
+					r.logger.Error(response.Err, "unable to get response", "rule", response.Rule.RuleID)
+				}
 				if !response.ConditionResponse.Passed {
 					violation, err := r.createViolation(response.ConditionResponse, response.Rule)
 					if err != nil {

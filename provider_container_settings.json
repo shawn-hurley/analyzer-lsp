@@ -6,7 +6,7 @@
     },
     {
         "name": "java",
-        "location": "examples/java",
+        "location": "examples/customers-tomcat-legacy",
         "binaryLocation": "/jdtls/bin/jdtls",
         "providerSpecificConfig": {
             "bundles": "/jdtls/java-rule-addon/java-rule-addon.core/target/java-rule-addon.core-1.0.0-SNAPSHOT.jar"
