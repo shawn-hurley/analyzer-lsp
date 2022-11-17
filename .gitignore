@@ -8,3 +8,5 @@ examples/java/.project
 org.eclipse.core*
 org.eclipse.osgi*
 org.eclipse.equinox*
+
+konveyor-analyzer

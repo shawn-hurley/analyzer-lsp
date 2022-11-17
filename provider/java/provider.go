@@ -29,7 +29,12 @@ type javaProvider struct {
 }
 
 type javaCondition struct {
-	Referenced string `yaml:'referenced'`
+	Referenced referenceCondition `yaml:'referenced'`
+}
+
+type referenceCondition struct {
+	Pattern  string `yaml:"pattern"`
+	Location string `yaml:"location"`
 }
 
 const BUNDLES_INIT_OPTION = "bundles"
@@ -66,35 +71,30 @@ func (p *javaProvider) Capabilities() ([]string, error) {
 	}, nil
 }
 
-func (p *javaProvider) getValues(val interface{}) (string, string, error) {
-	m, ok := val.(map[interface{}]interface{})
-	if !ok {
-		return "", "", fmt.Errorf("not a map")
-	}
-	return m["location"].(string), m["reference"].(string), nil
+// func (p *javaProvider) getValues(val interface{}) (string, string, error) {
+// 	m, ok := val.(map[interface{}]interface{})
+// 	if !ok {
+// 		return "", "", fmt.Errorf("not a map")
+// 	}
+// 	return m["location"].(string), m["reference"].(string), nil
 
-}
+// }
 
 func (p *javaProvider) Evaluate(cap string, conditionInfo []byte) (lib.ProviderEvaluateResponse, error) {
-	cond := map[string]interface{}{}
+	cond := &javaCondition{}
 	err := yaml.Unmarshal(conditionInfo, &cond)
 	if err != nil {
-		return lib.ProviderEvaluateResponse{}, fmt.Errorf("unable to get query info")
+		return lib.ProviderEvaluateResponse{}, fmt.Errorf("unable to get query info: %v", err)
 	}
 
 	fmt.Printf("\n\n%#v\n\n", cond)
-	query, ok := cond["referenced"].(string)
-	if query == "" && ok {
-		return lib.ProviderEvaluateResponse{}, fmt.Errorf("unable to get query info")
-	} else {
-		_, query, err = p.getValues(cond["referenced"])
-		fmt.Printf("\n%v\n", err)
-		if err != nil {
-			return lib.ProviderEvaluateResponse{}, fmt.Errorf("unable to get query info")
-		}
+	fmt.Printf("\n\n%#v\n\n", cond.Referenced)
+	fmt.Printf("\n\n%#v\n\n", cond.Referenced.Pattern)
+	if cond.Referenced.Pattern == "" {
+		return lib.ProviderEvaluateResponse{}, fmt.Errorf("provided query pattern empty")
 	}
 
-	symbols := p.GetAllSymbols(query)
+	symbols := p.GetAllSymbols(cond.Referenced.Pattern)
 
 	fmt.Printf("\n%#v\n", symbols)
 
