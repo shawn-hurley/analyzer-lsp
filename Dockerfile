@@ -15,4 +15,9 @@ COPY provider_container_settings.json /analyzer-lsp/provider_settings.json
 
 
 RUN go install golang.org/x/tools/gopls@latest
-CMD [ "/analyzer-lsp/konveyor-analyzer", "--error-on-violation"]
+RUN [ "/analyzer-lsp/konveyor-analyzer", "--rules", "demo-rules/local-storage.windup-rewrite.yaml" ]
+
+# Uncomment to enable delve debugging
+# RUN go install github.com/go-delve/delve/cmd/dlv@latest
+# RUN rm rule-example.yaml
+# CMD [ "dlv", "debug", "main.go", "--", "--rules", "demo-rules/local-storage.windup-rewrite.yaml" ]
