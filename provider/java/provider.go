@@ -105,16 +105,16 @@ func (p *javaProvider) Evaluate(cap string, conditionInfo []byte) (lib.ProviderE
 		references := p.GetAllReferences(s)
 		for _, ref := range references {
 			// Look for things that are in the location loaded, //Note may need to filter out vendor at some point
-			if strings.Contains(ref.URI, p.config.Location) {
-				incidents = append(incidents, lib.IncidentContext{
-					FileURI: ref.URI,
-					Extras: map[string]interface{}{
-						"lineNumber": ref.Range.Start.Line,
-						// TODO(fabianvf) remove this, Temporary for testing purpses
-						"kind": symbolKindToString(s.Kind),
-					},
-				})
-			}
+			// if strings.Contains(ref.URI, p.config.Location) {
+			incidents = append(incidents, lib.IncidentContext{
+				FileURI: ref.URI,
+				Extras: map[string]interface{}{
+					"lineNumber": ref.Range.Start.Line,
+					// TODO(fabianvf) remove this, Temporary for testing purpses
+					"kind": symbolKindToString(s.Kind),
+				},
+			})
+			// }
 		}
 	}
 
@@ -294,6 +294,7 @@ func (p *javaProvider) GetAllSymbols(query string) []protocol.WorkspaceSymbol {
 	}
 
 	var refs []protocol.WorkspaceSymbol
+	fmt.Println(wsp)
 	err := p.rpc.Call(p.ctx, "workspace/executeCommand", wsp, &refs)
 	if err != nil {
 		fmt.Printf("error: %v", err)
@@ -312,6 +313,7 @@ func (p *javaProvider) GetAllReferences(symbol protocol.WorkspaceSymbol) []proto
 		},
 	}
 
+	fmt.Println(params)
 	res := []protocol.Location{}
 	err := p.rpc.Call(p.ctx, "textDocument/references", params, &res)
 	if err != nil {
