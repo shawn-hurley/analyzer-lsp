@@ -111,7 +111,7 @@ jobs:
           podman save -o /tmp/tackle2-addon-analyzer.tar \
             quay.io/konveyor/tackle2-addon-analyzer:latest \
             $IMG_JAVA_PROVIDER \
-            $IMG_GENERIC_PROVIDER \
+            $IMG_GENERIC_PROVIDER
 
       - name: Upload image as artifact
         uses: actions/upload-artifact@v3
