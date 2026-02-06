@@ -586,6 +586,7 @@ func (r *ruleEngine) getRelativePathForViolation(fileURI uri.URI) (uri.URI, erro
 		if err != nil {
 			return fileURI, nil
 		}
+		r.logger.Info("getRelativePathForViolation", "fileURI", fileURI, "sourceLocation", sourceLocation, "absolute path", absPath)
 		// given a relative path for source
 		if absPath != sourceLocation {
 			relPath := filepath.Join(sourceLocation, strings.TrimPrefix(file, absPath))
